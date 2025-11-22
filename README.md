@@ -1,6 +1,6 @@
-# ChatGPT GK Test Automation
+# GK Test Automation
 
-This project contains automated tests for the ChatGPT GK application using Playwright.
+This project contains automated tests for the GK application using Playwright.
 
 ## Prerequisites
 

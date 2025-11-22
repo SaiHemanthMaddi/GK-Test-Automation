@@ -11,22 +11,22 @@ test.describe('Advanced - Hidden Elements', () => {
         await home.clickTab('Advanced');
 
         await test.step('Validate display:none element', async () => {
-            await expect(hidden).toBeHidden(, );
+            await expect(hidden.displayNoneElement).toBeHidden();
             console.log("display:none validated");
         });
 
         await test.step('Validate visibility:hidden element', async () => {
-            await expect(hidden).toBeHidden(, );
+            await expect(hidden.visibilityHiddenElement).toBeHidden();
             console.log("visibility:hidden validated");
         });
 
         await test.step('Validate opacity:0 element', async () => {
-            await expect(hidden).toBeVisible(, );
+            await expect(hidden.opacityZeroElement).toBeVisible();
             console.log("opacity:0 validated (element exists but is transparent)");
         });
 
         await test.step('Validate off-screen element', async () => {
-            await expect(hidden).toBeVisible(, );
+            await expect(hidden.offScreenElement).toBeVisible();
             console.log("off-screen element validated (element rendered outside viewport)");
         });
     });

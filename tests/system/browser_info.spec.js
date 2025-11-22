@@ -1,0 +1,24 @@
+import { test, expect } from '@playwright/test';
+import { HomePage } from '../../pages/HomePage';
+import { BrowserInfoPage } from '../../pages/System/BrowserInfoPage';
+
+test('System - Browser info & feature badges', async ({ page }) => {
+  const home = new HomePage(page);
+  const info = new BrowserInfoPage(page);
+
+  await home.open();
+  await home.clickTab('System');
+
+  const ua = await info.getUserAgent();
+  expect(ua.toLowerCase()).toContain('mozilla');
+
+  expect(await info.getFeatureText(info.geolocationSupport)).toMatch(/supported/i);
+  expect(await info.getFeatureText(info.notificationSupport)).toMatch(/supported/i);
+  expect(await info.getFeatureText(info.storageSupport)).toMatch(/supported/i);
+  expect(await info.getFeatureText(info.serviceWorkerSupport)).toMatch(/supported/i);
+
+  const screenRes = await info.getScreenResolution();
+  expect(screenRes).toContain('×');
+  const viewport = await info.getViewportSize();
+  expect(viewport).toContain('×');
+});

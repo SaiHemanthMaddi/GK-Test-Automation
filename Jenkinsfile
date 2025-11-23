@@ -18,14 +18,19 @@ pipeline {
             description: 'Select a specific spec file (or All)', 
             script: [
                 script: '''
-                    if (TEST_FOLDER == 'All') {
-                        return ['All']
+                    // Check if TEST_FOLDER is available
+                    if (binding.hasVariable('TEST_FOLDER')) {
+                        if (TEST_FOLDER == 'All') {
+                            return ['All']
+                        }
+                    } else {
+                        return ['Select a Folder First']
                     }
                     
                     def specs = []
                     specs.add('All')
                     
-                    // Map of folders to specs (hardcoded for reliability without workspace access)
+                    // Map of folders to specs
                     def specMap = [
                         'tests/advanced': ['canvas.spec.js', 'charts.spec.js', 'dynamic_ids.spec.js', 'hidden_elements.spec.js', 'iframes.spec.js', 'infinite_scroll.spec.js', 'multiple_windows.spec.js', 'popups_modals.spec.js', 'shadow_dom.spec.js', 'toast.spec.js'],
                         'tests/basic': ['buttons.spec.js', 'checkbox.spec.js', 'dropdown.spec.js', 'form_actions.spec.js', 'links.spec.js', 'password.spec.js', 'radio.spec.js', 'text_inputs.spec.js'],
@@ -39,10 +44,13 @@ pipeline {
                     if (specMap.containsKey(TEST_FOLDER)) {
                         specs.addAll(specMap[TEST_FOLDER])
                     } else {
-                        specs.add('No specs found')
+                        specs.add('No specs found for ' + TEST_FOLDER)
                     }
                     
                     return specs
+                ''',
+                fallbackScript: '''
+                    return ['Script Error - Check Jenkins Logs']
                 '''
             ]
         )

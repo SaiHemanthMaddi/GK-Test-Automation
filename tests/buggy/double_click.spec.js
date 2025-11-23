@@ -1,21 +1,18 @@
-import { test, expect } from '@playwright/test';
-import { HomePage } from '../../pages/HomePage';
-import { DoubleClickPage } from '../../pages/Buggy/DoubleClickPage';
+import { test, expect } from '../../fixtures/customFixtures.js';
 
 test('Buggy - Counter increments on single click (even though UI says double)', async ({
-  page,
+  homePage,
+  doubleClickPage,
 }) => {
-  const home = new HomePage(page);
-  const dc = new DoubleClickPage(page);
 
-  await home.open();
-  await home.clickTab('Buggy');
+  await homePage.open();
+  await homePage.clickTab('Buggy');
 
-  const before = await dc.beforeClickCount();
+  const before = await doubleClickPage.beforeClickCount();
   console.log('Before:', before);
 
-  await dc.clikTwiceBtn();
+  await doubleClickPage.clikTwiceBtn();
 
-  const after = await dc.afterClickCount();
+  const after = await doubleClickPage.afterClickCount();
   console.log('After:', after);
 });

@@ -1,15 +1,15 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../fixtures/customFixtures.js';
 import { HomePage } from '../../pages/HomePage';
 import { IntermediateDragDropPage } from '../../pages/Intermediate/DragDropPage.js';
 
 test.describe('Intermediate - Drag & Drop', () => {
-  test('Drag items into drop zone', async ({ page }) => {
-    const home = new HomePage(page);
+  test('Drag items into drop zone', async ({ page, homePage }) => {
+    
     const drag = new IntermediateDragDropPage(page);
 
     await test.step('Open Intermediate tab', async () => {
-      await home.open();
-      await home.clickTab('Intermediate');
+      await homePage.open();
+      await homePage.clickTab('Intermediate');
     });
 
     await test.step('Drag Item 1 into drop zone', async () => {

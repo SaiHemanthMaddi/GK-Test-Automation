@@ -1,14 +1,14 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../fixtures/customFixtures.js';
 import { HomePage } from '../../pages/HomePage';
 import { ChartsPage } from '../../pages/Advanced/ChartsPage';
 
 test.describe('Advanced - Charts & Graphs', () => {
-  test('Validate bar chart & line chart values', async ({ page }) => {
-    const home = new HomePage(page);
+  test('Validate bar chart & line chart values', async ({ page, homePage }) => {
+    
     const charts = new ChartsPage(page);
 
-    await home.open();
-    await home.clickTab('Advanced');
+    await homePage.open();
+    await homePage.clickTab('Advanced');
 
     await test.step('Validate bar chart values', async () => {
       const bars = await charts.getBarChartValues();

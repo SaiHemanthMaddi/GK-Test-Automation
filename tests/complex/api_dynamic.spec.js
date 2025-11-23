@@ -1,14 +1,14 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../fixtures/customFixtures.js';
 import { HomePage } from '../../pages/HomePage';
 import { ApiDynamicPage } from '../../pages/Complex/ApiDynamicPage';
 
 test.describe('Complex - API Driven Dynamic Content', () => {
-  test('should load API items and verify count and content', async ({ page }) => {
-    const home = new HomePage(page);
+  test('should load API items and verify count and content', async ({ page, homePage }) => {
+    
     const Api = new ApiDynamicPage(page);
 
-    await home.open();
-    await home.clickTab('Complex');
+    await homePage.open();
+    await homePage.clickTab('Complex');
 
     // ensure no api items initially (optional)
     const initialCount = await Api.countItems();

@@ -1,15 +1,11 @@
 // tests/buggy/case_sensitivity.spec.js
-import { test } from '@playwright/test';
-import { HomePage } from '../../pages/HomePage';
-import { CaseSensitivityPage } from '../../pages/Buggy/CaseSensitivityPage';
+import { test } from '../../fixtures/customFixtures.js';
 
-test('Buggy - Validate case-insensitive action attributes', async ({ page }) => {
-  const home = new HomePage(page);
-  const cs = new CaseSensitivityPage(page);
+test('Buggy - Validate case-insensitive action attributes', async ({ homePage, caseSensitivityPage }) => {
 
-  await home.open();
-  await home.clickTab('Buggy');
+  await homePage.open();
+  await homePage.clickTab('Buggy');
 
   const expectedActions = ['submit', 'cancel', 'delete'];
-  await cs.validateActions(expectedActions);
+  await caseSensitivityPage.validateActions(expectedActions);
 });

@@ -1,13 +1,13 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../fixtures/customFixtures.js';
 import { HomePage } from '../../pages/HomePage';
 import { DisabledButtonPage } from '../../pages/Buggy/DisabledButtonPage';
 
-test('Buggy - Should type into hidden input using force', async ({ page }) => {
-  const home = new HomePage(page);
+test('Buggy - Should type into hidden input using force', async ({ page, homePage }) => {
+  
   const disabled = new DisabledButtonPage(page);
 
-  await home.open();
-  await home.clickTab('Buggy');
+  await homePage.open();
+  await homePage.clickTab('Buggy');
 
   await expect(disabled.topDisplay).toBeVisible();
   const isDisabled = await disabled.verifyButtonIsDisabled();

@@ -1,15 +1,15 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../fixtures/customFixtures.js';
 import { HomePage } from '../../pages/HomePage';
 import { IntermediateMousePage } from '../../pages/Intermediate/MousePage';
 
 test.describe('Intermediate - Mouse Interactions', () => {
-  test('Hover and context menu behavior', async ({ page }) => {
-    const home = new HomePage(page);
+  test('Hover and context menu behavior', async ({ page, homePage }) => {
+    
     const mouse = new IntermediateMousePage(page);
 
     await test.step('Open Intermediate tab', async () => {
-      await home.open();
-      await home.clickTab('Intermediate');
+      await homePage.open();
+      await homePage.clickTab('Intermediate');
     });
 
     await test.step('Hover item 1 shows hover effect', async () => {

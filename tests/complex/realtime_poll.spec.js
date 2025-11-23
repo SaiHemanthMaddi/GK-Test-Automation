@@ -1,32 +1,28 @@
-import { test, expect } from '@playwright/test';
-import { HomePage } from '../../pages/HomePage';
-import { RealTimepollPage } from '../../pages/Complex/RealTimeUpdatesPage.js';
+import { test, expect } from '../../fixtures/customFixtures.js';
 
 test.describe('Complex - Real-time updates & Polling', () => {
-  test('should show WS messages and polling count updates', async ({ page }) => {
-    const home = new HomePage(page);
-    const poll = new RealTimepollPage(page);
+  test('should show WS messages and polling count updates', async ({ page, homePage, realtimeUpdatesPage }) => {
 
-    await home.open();
-    await home.clickTab('Complex');
+    await homePage.open();
+    await homePage.clickTab('Complex');
 
-    const wsStatus = await poll.getWsStatus();
+    const wsStatus = await realtimeUpdatesPage.getWsStatus();
     expect(wsStatus.toLowerCase()).toContain('connected');
 
-    await poll.waitForMessages(1);
-    const messages = await poll.getWsMessages();
+    await realtimeUpdatesPage.waitForMessages(1);
+    const messages = await realtimeUpdatesPage.getWsMessages();
     expect(messages.length).toBeGreaterThan(0);
 
-    const initialCount = await poll.getCount();
-    await poll.start();
+    const initialCount = await realtimeUpdatesPage.getCount();
+    await realtimeUpdatesPage.start();
     await page.waitForTimeout(10000);
-    const afterCount = await poll.getCount();
+    const afterCount = await realtimeUpdatesPage.getCount();
     expect(afterCount).toBeGreaterThanOrEqual(initialCount);
     console.log(afterCount);
 
-    await poll.stop();
+    await realtimeUpdatesPage.stop();
     await page.waitForTimeout(300);
-    const stoppedCount = await poll.getCount();
+    const stoppedCount = await realtimeUpdatesPage.getCount();
     expect(stoppedCount).toBeGreaterThanOrEqual(initialCount);
   });
 });

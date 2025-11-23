@@ -1,15 +1,13 @@
-import { test, expect } from '@playwright/test';
-import { HomePage } from '../../pages/HomePage';
-import { CookiePage } from '../../pages/System/CookiePage';
+import { test, expect } from '../../fixtures/customFixtures.js';
 
 test('System - Validate cookies using hardcoded expected values + browser context', async ({
   page,
+  homePage,
+  cookiePage,
 }) => {
-  const home = new HomePage(page);
-  const cookiePage = new CookiePage(page);
 
-  await home.open();
-  await home.clickTab('System');
+  await homePage.open();
+  await homePage.clickTab('System');
 
   // Set cookies
   await cookiePage.setSessionCookie();

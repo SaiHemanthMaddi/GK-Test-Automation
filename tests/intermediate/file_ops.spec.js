@@ -1,6 +1,4 @@
-import { test, expect } from '@playwright/test';
-import { HomePage } from '../../pages/HomePage';
-import { IntermediateFileOpsPage } from '../../pages/Intermediate/FileOpsPage';
+import { test, expect } from '../../fixtures/customFixtures.js';
 import path from 'path';
 import fs from 'fs';
 
@@ -19,22 +17,20 @@ async function saveDownloadToWindowsDownloads(download) {
 }
 
 test.describe('Intermediate - File Operations', () => {
-  test('Upload and download behaviors', async ({ page, browserName }) => {
-    const home = new HomePage(page);
-    const ops = new IntermediateFileOpsPage(page);
+  test('Upload and download behaviors', async ({ page, homePage, fileOpsPage, browserName }) => {
 
     await test.step('Open Intermediate tab', async () => {
-      await home.open();
-      await home.clickTab('Intermediate');
+      await homePage.open();
+      await homePage.clickTab('Intermediate');
     });
 
     await test.step('Upload sample file', async () => {
       const filePath = path.resolve(__dirname, '../../utils/sample-upload.txt');
-      await ops.uploadFile(filePath);
+      await fileOpsPage.uploadFile(filePath);
     });
 
     await test.step('Trigger download and validate', async () => {
-      const { download } = await ops.triggerDownloadAndWait();
+      const { download } = await fileOpsPage.triggerDownloadAndWait();
 
       const savedFilePath = await saveDownloadToWindowsDownloads(download);
 

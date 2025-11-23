@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../fixtures/customFixtures.js';
 import { HomePage } from '../../pages/HomePage';
 import { LanguagePage } from '../../pages/System/languagePage';
 
@@ -25,12 +25,12 @@ const LANGUAGE_MAP = {
   },
 };
 
-test('Validate all languages', async ({ page }) => {
-  const home = new HomePage(page);
+test('Validate all languages', async ({ page, homePage }) => {
+  
   const langPage = new LanguagePage(page);
 
-  await home.open();
-  await home.clickTab('System');
+  await homePage.open();
+  await homePage.clickTab('System');
 
   for (const lang of Object.keys(LANGUAGE_MAP)) {
     const { greeting, current } = LANGUAGE_MAP[lang];

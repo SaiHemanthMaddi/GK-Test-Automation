@@ -1,13 +1,13 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../fixtures/customFixtures.js';
 import { HomePage } from '../../pages/HomePage';
 import { BrowserInfoPage } from '../../pages/System/BrowserInfoPage';
 
-test('System - Browser info & feature badges', async ({ page }) => {
-  const home = new HomePage(page);
+test('System - Browser info & feature badges', async ({ page, homePage }) => {
+  
   const info = new BrowserInfoPage(page);
 
-  await home.open();
-  await home.clickTab('System');
+  await homePage.open();
+  await homePage.clickTab('System');
 
   const ua = await info.getUserAgent();
   expect(ua.toLowerCase()).toContain('mozilla');

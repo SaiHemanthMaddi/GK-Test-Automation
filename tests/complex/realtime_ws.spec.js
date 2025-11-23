@@ -1,13 +1,9 @@
-import { test, expect } from '@playwright/test';
-import { HomePage } from '../../pages/HomePage';
-import { RealTimepollPage } from '../../pages/Complex/RealTimeUpdatesPage.js';
+import { test, expect } from '../../fixtures/customFixtures.js';
 
-test('Complex - Validate rotating WebSocket messages', async ({ page }) => {
-  const home = new HomePage(page);
-  const ws = new RealTimepollPage(page);
+test('Complex - Validate rotating WebSocket messages', async ({ page, homePage, realtimeUpdatesPage }) => {
 
-  await home.open();
-  await home.clickTab('Complex');
+  await homePage.open();
+  await homePage.clickTab('Complex');
 
   // Wait for WS messages to populate (5s interval)
   await page.waitForFunction(
@@ -18,7 +14,7 @@ test('Complex - Validate rotating WebSocket messages', async ({ page }) => {
     { timeout: 15000 }
   );
 
-  const initialMsgs = await ws.getWsMessages();
+  const initialMsgs = await realtimeUpdatesPage.getWsMessages();
   console.log('Initial WS messages:', initialMsgs);
 
   expect(initialMsgs.length).toBeGreaterThan(0);
@@ -32,7 +28,7 @@ test('Complex - Validate rotating WebSocket messages', async ({ page }) => {
     expect(foundType).toBeTruthy();
   }
 
-  const afterMsgs = await ws.getWsMessages();
+  const afterMsgs = await realtimeUpdatesPage.getWsMessages();
   expect(afterMsgs.length).toBeGreaterThan(0);
 
   console.log('After rotation:', afterMsgs);

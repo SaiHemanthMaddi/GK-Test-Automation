@@ -1,25 +1,21 @@
-import { test, expect } from '@playwright/test';
-import { HomePage } from '../../pages/HomePage.js';
-import { BasicDropdownsPage } from '../../pages/basic/DropdownPage.js';
+import { test, expect } from '../../fixtures/customFixtures.js';
+import { dropdowns } from '../../fixtures/testData.js';
 
 test.describe('@basic Dropdowns', () => {
-  test('Select country & framework', async ({ page }) => {
-    const home = new HomePage(page);
-    const dropdown = new BasicDropdownsPage(page);
-
+  test('Select country & framework', async ({ homePage, dropdownPage }) => {
     await test.step('Open Basic tab', async () => {
-      await home.open();
-      await home.clickTab('Basic');
+      await homePage.open();
+      await homePage.clickTab('Basic');
     });
 
     await test.step('Select dropdowns', async () => {
-      await dropdown.selectCountry('India');
-      await dropdown.selectFramework('Playwright');
+      await dropdownPage.selectCountry(dropdowns.countries[0]); // 'India'
+      await dropdownPage.selectFramework(dropdowns.frameworks[0]); // 'Playwright'
     });
 
     await test.step('Validate selections', async () => {
-      await expect(dropdown.countrySelect).toContainText('India');
-      await expect(dropdown.searchableSelect).toContainText('Playwright');
+      await expect(dropdownPage.countrySelect).toContainText(dropdowns.countries[0]);
+      await expect(dropdownPage.searchableSelect).toContainText(dropdowns.frameworks[0]);
     });
   });
 });

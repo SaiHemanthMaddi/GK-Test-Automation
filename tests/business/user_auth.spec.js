@@ -1,42 +1,38 @@
-import { test, expect } from '@playwright/test';
-import { HomePage } from '../../pages/HomePage';
-import { UserAuthPage } from '../../pages/Business/UserAuthPage';
+import { test, expect } from '../../fixtures/customFixtures.js';
+import { users, generateRandomUser, waits } from '../../fixtures/testData.js';
 
 test.describe('Business - User Authentication', () => {
-  test('Validate login and registration flows', async ({ page }) => {
-    const home = new HomePage(page);
-    const auth = new UserAuthPage(page);
-
-    await home.open();
-    await home.clickTab('Business');
+  test('Validate login and registration flows', async ({ homePage, userAuthPage }) => {
+    await homePage.open();
+    await homePage.clickTab('Business');
 
     await test.step('Login with valid creds', async () => {
-      await auth.login('admin', 'password');
-      const welcome = auth.loginWelcomeMessage;
-      const email = auth.loginEmailMessage;
-      await page.waitForTimeout(5000);
+      await userAuthPage.login(users.admin.username, users.admin.password);
+      const welcome = userAuthPage.loginWelcomeMessage;
+      const email = userAuthPage.loginEmailMessage;
+      await welcome.waitFor({ state: 'visible', timeout: waits.afterLogin });
       await expect(welcome).toBeVisible();
       await expect(email).toBeVisible();
       console.log('✔ Login successful');
-      await auth.loginLogoutBtn.click();
+      await userAuthPage.loginLogoutBtn.click();
     });
 
     await test.step('Register a new user', async () => {
-      const random = Math.floor(Math.random() * 99999);
+      const newUser = generateRandomUser();
 
-      await page.waitForTimeout(500);
+      await userAuthPage.page.waitForTimeout(waits.afterRegistration);
 
-      await auth.register({
-        first: 'Sai',
-        last: 'Tester',
-        username: `user${random}`,
-        email: `email${random}@test.com`,
-        password: 'Password123',
+      await userAuthPage.register({
+        first: newUser.firstName,
+        last: newUser.lastName,
+        username: newUser.username,
+        email: newUser.email,
+        password: newUser.password,
       });
-      const welcomeText = await auth.regWelcomeMessage.innerText();
-      const emailText = await auth.regEmailMessage.innerText();
+      const welcomeText = await userAuthPage.regWelcomeMessage.innerText();
+      const emailText = await userAuthPage.regEmailMessage.innerText();
       console.log(`REGISTRATION SUCCESSFUL with ${welcomeText} and ${emailText}`);
-      await auth.regLogoutBtn.click();
+      await userAuthPage.regLogoutBtn.click();
     });
   });
 });

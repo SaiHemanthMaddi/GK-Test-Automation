@@ -1,14 +1,13 @@
-import { test, expect } from '@playwright/test';
-import { HomePage } from '../pages/HomePage';
+import { test, expect } from '../fixtures/customFixtures.js';
 
 test.describe('@regression Home Page – Tab Navigation Suite', () => {
-  test('@smoke Validate homepage load and tab interactions', async ({ page }) => {
-    const home = new HomePage(page);
+  test('@smoke Validate homepage load and tab interactions', async ({ page, homePage }) => {
+
 
     // STEP 1 — Open homepage
     await test.step('Open homepage', async () => {
-      await home.open();
-      await expect(page).toHaveTitle(/Gaurav Khurana/i);
+      await homePage.open();
+      await expect(page).toHaveTitle(/Test Automation Practice Hub/);
     });
 
     // STEP 2 — Check all tabs are visible
@@ -45,7 +44,7 @@ test.describe('@regression Home Page – Tab Navigation Suite', () => {
 
       for (const tabName of tabsToCheck) {
         await test.step(`Activate tab → ${tabName}`, async () => {
-          await home.clickTab(tabName);
+          await homePage.clickTab(tabName);
 
           // Verify tab panel visible
           const panel = page.getByRole('tabpanel');

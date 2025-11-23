@@ -1,13 +1,13 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../fixtures/customFixtures.js';
 import { HomePage } from '../../pages/HomePage';
 import { NotificationsPage } from '../../pages/System/NotificationsPage';
 
-test('System - Notifications toggle and actions', async ({ page }) => {
-  const home = new HomePage(page);
+test('System - Notifications toggle and actions', async ({ page, homePage }) => {
+  
   const notes = new NotificationsPage(page);
 
-  await home.open();
-  await home.clickTab('System');
+  await homePage.open();
+  await homePage.clickTab('System');
 
   // initial status exists
   const before = await notes.getNotificationStatus();

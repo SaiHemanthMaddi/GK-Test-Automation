@@ -1,13 +1,13 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../fixtures/customFixtures.js';
 import { HomePage } from '../../pages/HomePage';
 import { GeolocationPage } from '../../pages/System/GeolocationPage';
 
-test('System - Geolocation (mock & request) - functional', async ({ page }) => {
-  const home = new HomePage(page);
+test('System - Geolocation (mock & request) - functional', async ({ page, homePage }) => {
+  
   const geo = new GeolocationPage(page);
 
-  await home.open();
-  await home.clickTab('System');
+  await homePage.open();
+  await homePage.clickTab('System');
 
   await geo.useMockLocationClick();
   const el = await page.locator('[data-testid="geolocation-support"]').innerText();

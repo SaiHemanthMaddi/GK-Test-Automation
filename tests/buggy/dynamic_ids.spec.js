@@ -1,14 +1,14 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../fixtures/customFixtures.js';
 import { HomePage } from '../../pages/HomePage';
 import { DynamicIdsPage } from '../../pages/Buggy/DynamicIdsPage';
 
 test.describe('Buggy - Dynamic IDs', () => {
-  test('Replace username and verify input value', async ({ page }) => {
-    const home = new HomePage(page);
+  test('Replace username and verify input value', async ({ page, homePage }) => {
+    
     const dynamic = new DynamicIdsPage(page);
 
-    await home.open();
-    await home.clickTab('Buggy');
+    await homePage.open();
+    await homePage.clickTab('Buggy');
 
     await test.step('Ensure Dynamic IDs card is present', async () => {
       await expect(dynamic.usernameInput).toBeVisible();

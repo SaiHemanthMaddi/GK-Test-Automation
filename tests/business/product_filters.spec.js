@@ -1,19 +1,15 @@
-import { test, expect } from '@playwright/test';
-import { HomePage } from '../../pages/HomePage';
-import { ProductsPage } from '../../pages/Business/ProductsPage';
+import { test, expect } from '../../fixtures/customFixtures.js';
+import { waits } from '../../fixtures/testData.js';
 
 test.describe('Business - Product Search, Filter, Sorting, Validation Suite', () => {
-  test('Complete Product Validation', async ({ page }, testInfo) => {
-    const home = new HomePage(page);
-    const products = new ProductsPage(page);
-
-    await home.open();
-    await home.clickTab('Business');
+  test('Complete Product Validation', async ({ homePage, productsPage, page }, testInfo) => {
+    await homePage.open();
+    await homePage.clickTab('Business');
 
     await test.step('Search full keyword', async () => {
-      await products.searchProduct('API');
+      await productsPage.searchProduct('API');
 
-      const names = await products.getAllProductNames();
+      const names = await productsPage.getAllProductNames();
       expect(names.length).toBeGreaterThan(0);
 
       for (const n of names) {
@@ -27,9 +23,9 @@ test.describe('Business - Product Search, Filter, Sorting, Validation Suite', ()
     });
 
     await test.step('Search partial keyword', async () => {
-      await products.searchProduct('ap');
+      await productsPage.searchProduct('ap');
 
-      const names = await products.getAllProductNames();
+      const names = await productsPage.getAllProductNames();
       expect(names.length).toBeGreaterThan(0);
 
       for (const n of names) {
@@ -42,14 +38,14 @@ test.describe('Business - Product Search, Filter, Sorting, Validation Suite', ()
       });
     });
 
-    await products.search.fill('');
-    await page.waitForTimeout(400);
+    await productsPage.search.fill('');
+    await page.waitForTimeout(waits.afterFormSubmit);
 
-    await expect(products.categoryFilter).toBeVisible();
-    await expect(products.sortSelect).toBeVisible();
+    await expect(productsPage.categoryFilter).toBeVisible();
+    await expect(productsPage.sortSelect).toBeVisible();
 
     await test.step('Validate stock labels', async () => {
-      const stock = await products.getAllProductStockStatus();
+      const stock = await productsPage.getAllProductStockStatus();
 
       for (const s of stock) {
         expect(['In Stock', 'Out of Stock']).toContain(s.trim());
@@ -62,10 +58,10 @@ test.describe('Business - Product Search, Filter, Sorting, Validation Suite', ()
     });
 
     await test.step('Validate price formatting', async () => {
-      const prices = await products.productPrices.allInnerTexts();
+      const prices = await productsPage.productPrices.allInnerTexts();
 
       for (const price of prices) {
-        expect(await products.isPriceFormatValid(price.trim())).toBeTruthy();
+        expect(await productsPage.isPriceFormatValid(price.trim())).toBeTruthy();
       }
 
       await testInfo.attach('price-format-results', {

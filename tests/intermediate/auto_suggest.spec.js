@@ -1,16 +1,12 @@
-import { test, expect } from '@playwright/test';
-import { HomePage } from '../../pages/HomePage';
-import { IntermediateAutoSuggestPage } from '../../pages/Intermediate/AutoSuggestPage';
+import { test, expect } from '../../fixtures/customFixtures.js';
 
-test('Auto suggest - select Playwright', async ({ page }) => {
-  const home = new HomePage(page);
-  const auto = new IntermediateAutoSuggestPage(page);
+test('Auto suggest - select Playwright', async ({ page, homePage, autoSuggestPage }) => {
 
-  await home.open();
-  await home.clickTab('Intermediate');
+  await homePage.open();
+  await homePage.clickTab('Intermediate');
 
-  await auto.typeAndSelect('Play', 'Playwright');
+  await autoSuggestPage.typeAndSelect('Play', 'Playwright');
 
   // assert input updated
-  await expect(auto.input).toHaveValue('Playwright');
+  await expect(autoSuggestPage.input).toHaveValue('Playwright');
 });

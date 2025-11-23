@@ -1,14 +1,14 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../fixtures/customFixtures.js';
 import { HomePage } from '../../pages/HomePage';
 import { MultipleWindowsPage } from '../../pages/Advanced/MultipleWindowsPage';
 
 test.describe('Advanced - Multiple Windows', () => {
-  test('Validate window, tab & input-tab popups', async ({ page }) => {
-    const home = new HomePage(page);
+  test('Validate window, tab & input-tab popups', async ({ page, homePage }) => {
+    
     const windowsPage = new MultipleWindowsPage(page);
 
-    await home.open();
-    await home.clickTab('Advanced');
+    await homePage.open();
+    await homePage.clickTab('Advanced');
 
     // New Window
     await test.step('Open new window', async () => {

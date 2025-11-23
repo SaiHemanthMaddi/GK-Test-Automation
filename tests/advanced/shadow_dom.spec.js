@@ -1,15 +1,15 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../fixtures/customFixtures.js';
 import { HomePage } from '../../pages/HomePage';
 import { ShadowDomPage } from '../../pages/Advanced/ShadowDomPage';
 
 test.describe('Advanced - Shadow DOM', () => {
-  test('Create shadow DOM & validate shadow content', async ({ page }) => {
-    const home = new HomePage(page);
+  test('Create shadow DOM & validate shadow content', async ({ page, homePage }) => {
+    
     const shadow = new ShadowDomPage(page);
 
     await test.step('Open Advanced tab', async () => {
-      await home.open();
-      await home.clickTab('Advanced');
+      await homePage.open();
+      await homePage.clickTab('Advanced');
     });
 
     await test.step('Create shadow DOM', async () => {

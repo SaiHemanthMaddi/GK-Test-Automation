@@ -1,35 +1,29 @@
-import { test, expect } from '@playwright/test';
-import { HomePage } from '../../pages/HomePage';
-import { UserAuthPage } from '../../pages/Business/UserAuthPage';
-import { BusinessCartPage } from '../../pages/Business/CartPage';
+import { test, expect } from '../../fixtures/customFixtures.js';
+import { users, products } from '../../fixtures/testData.js';
 
 test.describe('Business - Shopping Cart', () => {
-  test('Validate cart empty & product add restrictions', async ({ page }) => {
-    const home = new HomePage(page);
-    const auth = new UserAuthPage(page);
-    const cart = new BusinessCartPage(page);
-
-    await home.open();
-    await home.clickTab('Business');
+  test('Validate cart empty & product add restrictions', async ({ homePage, userAuthPage, cartPage }) => {
+    await homePage.open();
+    await homePage.clickTab('Business');
 
     await test.step('Login with valid creds', async () => {
-      await auth.login('admin', 'password');
-      await expect(auth.loginWelcomeMessage).toBeVisible();
-      await expect(auth.loginEmailMessage).toBeVisible();
+      await userAuthPage.login(users.admin.username, users.admin.password);
+      await expect(userAuthPage.loginWelcomeMessage).toBeVisible();
+      await expect(userAuthPage.loginEmailMessage).toBeVisible();
       console.log('✔ Login successful');
     });
 
     await test.step('Check empty cart text', async () => {
-      const text = await cart.isCartEmpty();
+      const text = await cartPage.isCartEmpty();
       expect(text).toContain('Your cart is empty');
       console.log('Verified empty cart');
     });
 
     await test.step('Validate add-to-cart buttons based on stock', async () => {
-      const total = 5;
+      const total = products.totalProducts;
 
       for (let i = 1; i <= total; i++) {
-        const button = cart.addButton(i);
+        const button = cartPage.addButton(i);
         const isDisabled = await button.isDisabled();
 
         console.log(`Product ${i}: Disabled = ${isDisabled}`);
@@ -45,17 +39,13 @@ test.describe('Business - Shopping Cart', () => {
     });
   });
 
-  test('Validate add & verify cart behavior', async ({ page }) => {
-    const home = new HomePage(page);
-    const auth = new UserAuthPage(page);
-    const cart = new BusinessCartPage(page);
-
-    await home.open();
-    await home.clickTab('Business');
+  test('Validate add & verify cart behavior', async ({ homePage, userAuthPage, cartPage }) => {
+    await homePage.open();
+    await homePage.clickTab('Business');
 
     // LOGIN
-    await auth.login('admin', 'password');
-    await expect(auth.loginWelcomeMessage).toBeVisible();
+    await userAuthPage.login(users.admin.username, users.admin.password);
+    await expect(userAuthPage.loginWelcomeMessage).toBeVisible();
     console.log('✔ Login successful');
 
     // INITIAL CART EXPECTED = 0
@@ -64,8 +54,8 @@ test.describe('Business - Shopping Cart', () => {
     // ADD PRODUCTS
     const addedIndexes = [];
 
-    for (let i = 1; i <= 5; i++) {
-      const btn = cart.addButton(i);
+    for (let i = 1; i <= products.totalProducts; i++) {
+      const btn = cartPage.addButton(i);
 
       if (await btn.isEnabled()) {
         console.log(`Adding product ${i} to cart...`);
@@ -80,7 +70,7 @@ test.describe('Business - Shopping Cart', () => {
     console.log(`✔ Updated cart count = ${updatedCount}`);
 
     for (const idx of addedIndexes) {
-      const name = await cart.productName(idx).innerText();
+      const name = await cartPage.productName(idx).innerText();
       console.log(`Product ${idx}: ${name}`);
     }
   });

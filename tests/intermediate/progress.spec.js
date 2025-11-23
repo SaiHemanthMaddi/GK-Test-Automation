@@ -1,15 +1,15 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../fixtures/customFixtures.js';
 import { HomePage } from '../../pages/HomePage';
 import { IntermediateProgressPage } from '../../pages/Intermediate/ProgressPage';
 
 test.describe('Intermediate - Progress & Loading', () => {
-  test('Validate progress and loading button state', async ({ page }) => {
-    const home = new HomePage(page);
+  test('Validate progress and loading button state', async ({ page, homePage }) => {
+    
     const pr = new IntermediateProgressPage(page);
 
     await test.step('Open Intermediate tab', async () => {
-      await home.open();
-      await home.clickTab('Intermediate');
+      await homePage.open();
+      await homePage.clickTab('Intermediate');
     });
 
     await test.step('Validate progress elements visible', async () => {

@@ -1,13 +1,13 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../fixtures/customFixtures.js';
 import { HomePage } from '../../pages/HomePage';
 import { DynamicTablePage } from '../../pages/Complex/DynamicTablePage';
 
-test('Edit AND delete first row successfully', async ({ page }) => {
-  const home = new HomePage(page);
+test('Edit AND delete first row successfully', async ({ page, homePage }) => {
+  
   const table = new DynamicTablePage(page);
 
-  await home.open();
-  await home.clickTab('Complex');
+  await homePage.open();
+  await homePage.clickTab('Complex');
 
   await table.editFirstRow('Updated A', '555');
 

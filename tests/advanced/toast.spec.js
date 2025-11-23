@@ -1,14 +1,14 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../fixtures/customFixtures.js';
 import { HomePage } from '../../pages/HomePage';
 import { ToastPage } from '../../pages/Advanced/ToastPage';
 
 test.describe('Advanced - Toast Notifications', () => {
-  test('Click all toast buttons (no actual toasts visible on UI)', async ({ page }) => {
-    const home = new HomePage(page);
+  test('Click all toast buttons (no actual toasts visible on UI)', async ({ page, homePage }) => {
+    
     const toast = new ToastPage(page);
 
-    await home.open();
-    await home.clickTab('Advanced');
+    await homePage.open();
+    await homePage.clickTab('Advanced');
 
     const types = ['success', 'error', 'info', 'warning'];
 

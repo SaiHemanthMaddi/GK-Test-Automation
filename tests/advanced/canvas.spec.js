@@ -1,14 +1,14 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../fixtures/customFixtures.js';
 import { HomePage } from '../../pages/HomePage';
 import { CanvasPage } from '../../pages/Advanced/CanvasPage';
 
 test.describe('Advanced - Canvas Drawing', () => {
-  test('Draw & clear canvas', async ({ page }) => {
-    const home = new HomePage(page);
+  test('Draw & clear canvas', async ({ page, homePage }) => {
+    
     const canvas = new CanvasPage(page);
 
-    await home.open();
-    await home.clickTab('Advanced');
+    await homePage.open();
+    await homePage.clickTab('Advanced');
 
     await test.step('Draw on canvas', async () => {
       await canvas.drawPoints();

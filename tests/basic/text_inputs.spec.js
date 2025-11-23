@@ -1,31 +1,22 @@
-import { test, expect } from '@playwright/test';
-import { HomePage } from '../../pages/HomePage';
-import { BasicTextInputsPage } from '../../pages/basic/TextInputsPage';
+import { test, expect } from '../../fixtures/customFixtures.js';
+import { formData } from '../../fixtures/testData.js';
 
 test.describe('@basic Text Inputs', () => {
-  test('Fill and validate text inputs', async ({ page }) => {
-    const home = new HomePage(page);
-    const inputs = new BasicTextInputsPage(page);
-
+  test('Fill and validate text inputs', async ({ homePage, textInputsPage }) => {
     await test.step('Open Basic tab', async () => {
-      await home.open();
-      await home.clickTab('Basic');
+      await homePage.open();
+      await homePage.clickTab('Basic');
     });
 
     await test.step('Fill text fields', async () => {
-      await inputs.fillAllFields({
-        firstName: 'Sai',
-        lastName: 'Maddi',
-        email: 'sai@test.com',
-        bio: 'Automation tester',
-      });
+      await textInputsPage.fillAllFields(formData.textInputs);
     });
 
     await test.step('Validate inputs', async () => {
-      await expect(inputs.firstName).toHaveValue('Sai');
-      await expect(inputs.lastName).toHaveValue('Maddi');
-      await expect(inputs.email).toHaveValue('sai@test.com');
-      await expect(inputs.bio).toHaveValue('Automation tester');
+      await expect(textInputsPage.firstName).toHaveValue(formData.textInputs.firstName);
+      await expect(textInputsPage.lastName).toHaveValue(formData.textInputs.lastName);
+      await expect(textInputsPage.email).toHaveValue(formData.textInputs.email);
+      await expect(textInputsPage.bio).toHaveValue(formData.textInputs.bio);
     });
   });
 });

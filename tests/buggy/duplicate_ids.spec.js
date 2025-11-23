@@ -1,13 +1,13 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../fixtures/customFixtures.js';
 import { HomePage } from '../../pages/HomePage';
 import { DuplicateIdsPage } from '../../pages/Buggy/DuplicateIdsPage';
 
-test('Buggy - Should type into hidden input using force', async ({ page }) => {
-  const home = new HomePage(page);
+test('Buggy - Should type into hidden input using force', async ({ page, homePage }) => {
+  
   const dup = new DuplicateIdsPage(page);
 
-  await home.open();
-  await home.clickTab('Buggy');
+  await homePage.open();
+  await homePage.clickTab('Buggy');
 
   await expect(dup.topDisplay).toBeVisible();
   await dup.fillFirstInput('Sai');

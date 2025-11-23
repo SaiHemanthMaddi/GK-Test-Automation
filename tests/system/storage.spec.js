@@ -1,13 +1,13 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../fixtures/customFixtures.js';
 import { HomePage } from '../../pages/HomePage';
 import { StoragePage } from '../../pages/System/StoragePage';
 
-test('System - Storage set/clear behavior', async ({ page }) => {
-  const home = new HomePage(page);
+test('System - Storage set/clear behavior', async ({ page, homePage }) => {
+  
   const storage = new StoragePage(page);
 
-  await home.open();
-  await home.clickTab('System');
+  await homePage.open();
+  await homePage.clickTab('System');
 
   // Set local
   await storage.setLocalStorage();

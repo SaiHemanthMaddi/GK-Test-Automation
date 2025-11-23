@@ -1,15 +1,15 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../fixtures/customFixtures.js';
 import { HomePage } from '../../pages/HomePage';
 import { IFramesPage } from '../../pages/Advanced/IFramesPage';
 
 test.describe('Advanced - IFrames', () => {
-  test('Validate single & nested iframe interactions', async ({ page }) => {
-    const home = new HomePage(page);
+  test('Validate single & nested iframe interactions', async ({ page, homePage }) => {
+    
     const frame = new IFramesPage(page);
 
     await test.step('Open Advanced tab', async () => {
-      await home.open();
-      await home.clickTab('Advanced');
+      await homePage.open();
+      await homePage.clickTab('Advanced');
     });
 
     await test.step('Validate single iframe content & click button', async () => {

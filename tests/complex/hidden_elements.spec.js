@@ -1,13 +1,13 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../fixtures/customFixtures.js';
 import { HomePage } from '../../pages/HomePage';
 import { HiddenElementsPage } from '../../pages/Complex/HiddenElementsPage';
 
-test('Complex - Hidden Elements should toggle correctly', async ({ page }) => {
-  const home = new HomePage(page);
+test('Complex - Hidden Elements should toggle correctly', async ({ page, homePage }) => {
+  
   const hidden = new HiddenElementsPage(page);
 
-  await home.open();
-  await home.clickTab('Complex');
+  await homePage.open();
+  await homePage.clickTab('Complex');
 
   // Before clicking - hidden elements should NOT exist
   expect(await hidden.countHiddenElements()).toBeFalsy();

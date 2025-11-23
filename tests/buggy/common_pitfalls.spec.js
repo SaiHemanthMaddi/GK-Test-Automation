@@ -1,16 +1,11 @@
-import { test, expect } from '@playwright/test';
-import { HomePage } from '../../pages/HomePage';
-import { PitfallsPage } from '../../pages/Buggy/CommonAutomationPitfallsPage';
+import { test, expect } from '../../fixtures/customFixtures.js';
 
-test('Buggy - Common Automation Pitfalls content is correct', async ({ page }) => {
-  const home = new HomePage(page);
-  const pitfalls = new PitfallsPage(page);
+test('Buggy - Common Automation Pitfalls content is correct', async ({ homePage, commonPitfallsPage }) => {
 
-  await home.open();
-  await home.clickTab('Buggy');
+  await homePage.open();
+  await homePage.clickTab('Buggy');
 
-  await expect(pitfalls).toBeVisible();
-  const content = await pitfalls.getContent();
+  const content = await commonPitfallsPage.getContent();
   expect(content.title).toBe('Common Automation Pitfalls');
   expect(content.dontItems.length).toBeGreaterThan(0);
   expect(content.doItems.length).toBeGreaterThan(0);

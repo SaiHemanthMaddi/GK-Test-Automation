@@ -1,23 +1,18 @@
-import { test, expect } from '@playwright/test';
-import { HomePage } from '../../pages/HomePage';
-import { BasicRadioPage } from '../../pages/basic/RadioPage';
+import { test, expect } from '../../fixtures/customFixtures.js';
 
 test.describe('@basic Radio Buttons', () => {
-  test('Select gender option', async ({ page }) => {
-    const home = new HomePage(page);
-    const radio = new BasicRadioPage(page);
-
+  test('Select gender option', async ({ homePage, radioPage }) => {
     await test.step('Open Basic tab', async () => {
-      await home.open();
-      await home.clickTab('Basic');
+      await homePage.open();
+      await homePage.clickTab('Basic');
     });
 
     await test.step('Select Male', async () => {
-      await radio.selectGender('male');
+      await radioPage.selectGender('male');
     });
 
     await test.step('Validate selection', async () => {
-      await expect(radio.male).toHaveAttribute('data-state', 'checked');
+      await expect(radioPage.male).toHaveAttribute('data-state', 'checked');
     });
   });
 });

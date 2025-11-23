@@ -1,27 +1,22 @@
-import { test, expect } from '@playwright/test';
-import { HomePage } from '../../pages/HomePage.js';
-import { BasicCheckboxPage } from '../../pages/basic/CheckboxPage.js';
+import { test, expect } from '../../fixtures/customFixtures.js';
 
 test.describe('@basic Checkboxes', () => {
-  test('Toggle all checkbox options', async ({ page }) => {
-    const home = new HomePage(page);
-    const box = new BasicCheckboxPage(page);
-
+  test('Toggle all checkbox options', async ({ homePage, checkboxPage }) => {
     await test.step('Open Basic tab', async () => {
-      await home.open();
-      await home.clickTab('Basic');
+      await homePage.open();
+      await homePage.clickTab('Basic');
     });
 
     await test.step('Toggle all options', async () => {
-      await box.toggleNewsletter();
-      await box.toggleTerms();
-      await box.toggleNotifications();
+      await checkboxPage.toggleNewsletter();
+      await checkboxPage.toggleTerms();
+      await checkboxPage.toggleNotifications();
     });
 
     await test.step('Validate states', async () => {
-      await expect(box.newsletter).toHaveAttribute('data-state', 'checked');
-      await expect(box.terms).toHaveAttribute('data-state', 'checked');
-      await expect(box.notifications).toHaveAttribute('data-state', 'checked');
+      await expect(checkboxPage.newsletter).toHaveAttribute('data-state', 'checked');
+      await expect(checkboxPage.terms).toHaveAttribute('data-state', 'checked');
+      await expect(checkboxPage.notifications).toHaveAttribute('data-state', 'checked');
     });
   });
 });

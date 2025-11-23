@@ -1,13 +1,13 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../fixtures/customFixtures.js';
 import { HomePage } from '../../pages/HomePage';
 import { DelayedLoadingPage } from '../../pages/Complex/DelayedLoadingPage.js';
 
 test.describe('Complex - Delayed Loading', () => {
-  test('should wait and verify delayed elements load', async ({ page }) => {
-    const home = new HomePage(page);
+  test('should wait and verify delayed elements load', async ({ page, homePage }) => {
+    
     const DelayedLoading = new DelayedLoadingPage(page);
-    await home.open();
-    await home.clickTab('Complex');
+    await homePage.open();
+    await homePage.clickTab('Complex');
 
     await DelayedLoading.waitForAllElements(9000);
     const texts = await DelayedLoading.getTexts();

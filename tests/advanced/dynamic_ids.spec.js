@@ -1,15 +1,15 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../fixtures/customFixtures.js';
 import { HomePage } from '../../pages/HomePage';
 import { DynamicIdsPage } from '../../pages/Advanced/DynamicIdsPage';
 
 test.describe('Advanced - Dynamic IDs', () => {
-  test('Validate dynamic ID regeneration & dynamic classes', async ({ page }) => {
-    const home = new HomePage(page);
+  test('Validate dynamic ID regeneration & dynamic classes', async ({ page, homePage }) => {
+    
     const dyn = new DynamicIdsPage(page);
 
     await test.step('Open Advanced tab', async () => {
-      await home.open();
-      await home.clickTab('Advanced');
+      await homePage.open();
+      await homePage.clickTab('Advanced');
     });
 
     await test.step('Capture current dynamic ID', async () => {

@@ -1,8 +1,5 @@
-import { test, expect } from '@playwright/test';
-import { HomePage } from '../../pages/HomePage.js';
-import { BasicLinksPage } from '../../pages/basic/LinksPage.js';
-import { BasicTextInputsPage } from '../../pages/basic/TextInputsPage.js';
-import { BasicDropdownsPage } from '../../pages/basic/DropdownPage.js';
+import { test, expect } from '../../fixtures/customFixtures.js';
+import { waits, dropdowns, formData } from '../../fixtures/testData.js';
 
 async function verifyExternalLink(page, element, expectedUrlPart) {
   const popupPromise = page.waitForEvent('popup');
@@ -16,24 +13,20 @@ async function verifyExternalLink(page, element, expectedUrlPart) {
 }
 
 test.describe('@basic Links', () => {
-  test('Validate internal & external links', async ({ page }) => {
-    const home = new HomePage(page);
-    const link = new BasicLinksPage(page);
-    const dropdown = new BasicDropdownsPage(page);
-    const inputs = new BasicTextInputsPage(page);
+  test('Validate internal & external links', async ({ page, homePage, linksPage, dropdownPage, textInputsPage }) => {
 
     await test.step('Open Basic tab', async () => {
-      await home.open();
-      await home.clickTab('Basic');
+      await homePage.open();
+      await homePage.clickTab('Basic');
     });
 
     await test.step('Click internal link: Go to Basic Elements', async () => {
-      await link.internal1.click();
+      await linksPage.internal1.click();
       await expect(page).toHaveURL(/#basic-elements/);
     });
 
     await test.step('Click internal link: Jump to Advanced Features', async () => {
-      await link.internal2.click();
+      await linksPage.internal2.click();
       await expect(page).toHaveURL(/#advanced-features/);
     });
 
@@ -43,11 +36,11 @@ test.describe('@basic Links', () => {
         el.scrollTo(0, el.scrollHeight);
       });
 
-      await page.waitForTimeout(800);
+      await page.waitForTimeout(waits.afterScroll);
 
-      await link.scrollTop.click();
+      await linksPage.scrollTop.click();
 
-      await page.waitForTimeout(1200);
+      await page.waitForTimeout(waits.afterPageTransition);
 
       const scrollTop = await page.evaluate(() => {
         const el = document.querySelector('[data-slot="tabs-content"]');
@@ -57,25 +50,25 @@ test.describe('@basic Links', () => {
       expect(scrollTop).toBeLessThanOrEqual(5);
     });
 
-    await verifyExternalLink(page, link.selenium, 'selenium.dev');
-    await verifyExternalLink(page, link.playwright, 'playwright.dev');
-    await verifyExternalLink(page, link.cypress, 'cypress.io');
+    await verifyExternalLink(page, linksPage.selenium, 'selenium.dev');
+    await verifyExternalLink(page, linksPage.playwright, 'playwright.dev');
+    await verifyExternalLink(page, linksPage.cypress, 'cypress.io');
 
     await test.step('Fill Email text field', async () => {
-      await inputs.fillEmailField({
-        email: 'sai@test.com',
+      await textInputsPage.fillEmailField({
+        email: formData.textInputs.email,
       });
     });
 
     await test.step('Select dropdown', async () => {
-      await dropdown.selectCountry('India');
+      await dropdownPage.selectCountry(dropdowns.countries[0]);
     });
 
     await test.step('Validate link visibility', async () => {
-      await expect(link.internal1).toBeVisible();
-      await expect(link.selenium).toBeVisible();
-      await expect(link.dynamicCountry).toHaveText('IN Info');
-      await expect(link.dynamicEmail).toHaveText('Email sai@test.com');
+      await expect(linksPage.internal1).toBeVisible();
+      await expect(linksPage.selenium).toBeVisible();
+      await expect(linksPage.dynamicCountry).toHaveText('IN Info');
+      await expect(linksPage.dynamicEmail).toHaveText(`Email ${formData.textInputs.email}`);
     });
   });
 });

@@ -1,23 +1,14 @@
-import { test, expect } from '@playwright/test';
-import { HomePage } from '../../pages/HomePage';
-import { ContactPage } from '../../pages/Business/ContactPage';
+import { test, expect } from '../../fixtures/customFixtures.js';
+import { formData } from '../../fixtures/testData.js';
 
 test.describe('Business - Contact Form', () => {
-  test('Validate contact form input fields', async ({ page }) => {
-    const home = new HomePage(page);
-    const contact = new ContactPage(page);
-
-    await home.open();
-    await home.clickTab('Business');
+  test('Validate contact form input fields', async ({ homePage, contactPage }) => {
+    await homePage.open();
+    await homePage.clickTab('Business');
 
     await test.step('Fill contact form', async () => {
-      await contact.submitForm({
-        name: 'Sai Hemanth',
-        email: 'sai@test.com',
-        subject: 'Support',
-        message: 'This is a test inquiry.',
-      });
-      await contact.submitBtn.isEnabled();
+      await contactPage.submitForm(formData.contact);
+      await contactPage.submitBtn.isEnabled();
       console.log('Form submitted (button is enabled on the site)');
     });
   });

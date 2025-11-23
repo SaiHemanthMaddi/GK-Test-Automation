@@ -1,15 +1,15 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../fixtures/customFixtures.js';
 import { HomePage } from '../../pages/HomePage';
 import { IntermediateSlidersPage } from '../../pages/Intermediate/SlidersPage';
 
 test.describe('Intermediate - Sliders', () => {
-  test('Adjust sliders and validate display', async ({ page }) => {
-    const home = new HomePage(page);
+  test('Adjust sliders and validate display', async ({ page, homePage }) => {
+    
     const sliders = new IntermediateSlidersPage(page);
 
     await test.step('Open Intermediate tab', async () => {
-      await home.open();
-      await home.clickTab('Intermediate');
+      await homePage.open();
+      await homePage.clickTab('Intermediate');
     });
 
     await test.step('Set percentage slider to 70 via JS', async () => {

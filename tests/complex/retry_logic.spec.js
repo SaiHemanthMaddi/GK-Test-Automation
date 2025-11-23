@@ -1,14 +1,14 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../fixtures/customFixtures.js';
 import { HomePage } from '../../pages/HomePage';
 import { RetryLogicPage } from '../../pages/Complex/RetryLogicPage.js';
 
 test.describe('Complex - Retry Logic', () => {
-  test('should perform retry attempts and update count/status', async ({ page }) => {
-    const home = new HomePage(page);
+  test('should perform retry attempts and update count/status', async ({ page, homePage }) => {
+    
     const RetryLogic = new RetryLogicPage(page);
 
-    await home.open();
-    await home.clickTab('Complex');
+    await homePage.open();
+    await homePage.clickTab('Complex');
 
     // initial values
     const initialStatus = await RetryLogic.getStatus();

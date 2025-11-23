@@ -1,4 +1,4 @@
-export class RealTimepollPage {
+export class realtimeUpdatesPage {
   constructor(page) {
     this.page = page;
     this.wsStatus = page.locator('[data-testid="ws-status"]');

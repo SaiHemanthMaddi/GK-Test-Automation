@@ -1,14 +1,14 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../fixtures/customFixtures.js';
 import { HomePage } from '../../pages/HomePage';
 import { InfiniteScrollPage } from '../../pages/Advanced/InfiniteScrollPage';
 
 test.describe('Advanced - Infinite Scroll', () => {
-  test('Scroll updates visible item count', async ({ page }) => {
-    const home = new HomePage(page);
+  test('Scroll updates visible item count', async ({ page, homePage }) => {
+    
     const scroll = new InfiniteScrollPage(page);
 
-    await home.open();
-    await home.clickTab('Advanced');
+    await homePage.open();
+    await homePage.clickTab('Advanced');
 
     await scroll.container.scrollIntoViewIfNeeded();
     await page.waitForTimeout(800);

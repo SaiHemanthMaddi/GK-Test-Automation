@@ -1,16 +1,12 @@
-import { test } from '@playwright/test';
-import { HomePage } from '../../pages/HomePage';
-import { ElementOutsideViewportPage } from '../../pages/Buggy/OutsideViewportPage';
+import { test } from '../../fixtures/customFixtures.js';
 
-test('Buggy - Element outside viewport should be scrolled into view', async ({ page }) => {
-  const home = new HomePage(page);
-  const view = new ElementOutsideViewportPage(page);
+test('Buggy - Element outside viewport should be scrolled into view', async ({ homePage, outsideViewportPage }) => {
 
-  await home.open();
-  await home.clickTab('Buggy');
+  await homePage.open();
+  await homePage.clickTab('Buggy');
 
-  await view.scrollToButton();
-  await view.validateButtonVisible();
+  await outsideViewportPage.scrollToButton();
+  await outsideViewportPage.validateButtonVisible();
 
-  await view.clickButton();
+  await outsideViewportPage.clickButton();
 });

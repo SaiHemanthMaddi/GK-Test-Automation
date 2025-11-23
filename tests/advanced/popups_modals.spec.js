@@ -1,15 +1,15 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../fixtures/customFixtures.js';
 import { HomePage } from '../../pages/HomePage';
 import { PopupsModalsPage } from '../../pages/Advanced/PopupsModalsPage';
 
 test.describe('Advanced - Popups & Modals', () => {
-  test('Handle alert, confirm, prompt & custom modal', async ({ page }) => {
-    const home = new HomePage(page);
+  test('Handle alert, confirm, prompt & custom modal', async ({ page, homePage }) => {
+    
     const modal = new PopupsModalsPage(page);
 
     await test.step('Open Advanced tab', async () => {
-      await home.open();
-      await home.clickTab('Advanced');
+      await homePage.open();
+      await homePage.clickTab('Advanced');
     });
 
     await test.step('Trigger and accept alert', async () => {

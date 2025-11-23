@@ -1,18 +1,14 @@
-import { test } from '@playwright/test';
-import { HomePage } from '../../pages/HomePage';
-import { OverlappingElementsPage } from '../../pages/Buggy/OverlappingElementsPage';
+import { test } from '../../fixtures/customFixtures.js';
 
 test.describe('Buggy Feature - Overlapping Elements', () => {
-  test('Handle overlay blocking element click', async ({ page }) => {
-    const home = new HomePage(page);
-    const overlay = new OverlappingElementsPage(page);
+  test('Handle overlay blocking element click', async ({ homePage, overlappingElementsPage }) => {
 
-    await home.open();
-    await home.clickTab('Buggy');
+    await homePage.open();
+    await homePage.clickTab('Buggy');
 
-    await overlay.clickOverlayButton();
-    await overlay.validateOverlayGone();
-    await overlay.validateSuccessAlert();
+    await overlappingElementsPage.clickOverlayButton();
+    await overlappingElementsPage.validateOverlayGone();
+    await overlappingElementsPage.validateSuccessAlert();
 
     console.log('✔ Overlapping Element scenario handled successfully');
   });

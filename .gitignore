@@ -10,9 +10,6 @@ node_modules/
 allure-results/
 allure-report/
 
-# Backups
-*.zip
-
 # System
 .DS_Store
 Thumbs.db

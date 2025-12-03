@@ -1,62 +1,93 @@
-# GK Test Automation
+# GK Test Automation Framework
 
-This project contains automated tests for the GK application using Playwright.
+This project contains a robust automated testing framework for the GK application, built using [Playwright](https://playwright.dev/). It supports comprehensive UI and API testing with detailed reporting via Allure.
 
-## Prerequisites
+## 📋 Prerequisites
 
-- Node.js (v14 or higher)
-- npm
+Ensure you have the following installed on your machine:
 
-## Setup
+-   **Node.js** (v14 or higher)
+-   **npm** (Node Package Manager)
 
-1. Clone the repository.
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Install Playwright browsers:
-   ```bash
-   npx playwright install
-   ```
+## 🚀 Setup
 
-## Running Tests
+1.  **Clone the repository:**
+    ```bash
+    git clone <repository-url>
+    cd gk
+    ```
 
-### Run all tests
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
 
+3.  **Install Playwright browsers:**
+    ```bash
+    npx playwright install
+    ```
+
+## 📂 Project Structure
+
+The project is organized as follows:
+
+-   `tests/`: Contains test specifications (e.g., `tests/advanced`, `tests/buggy`).
+-   `pages/`: Page Object Models (POM) for encapsulating page interactions.
+-   `fixtures/`: Test fixtures and global setup configurations (`globalSetup.js`).
+-   `utils/`: Utility functions and helpers.
+-   `playwright.config.js`: Main Playwright configuration file.
+-   `package.json`: Project dependencies and scripts.
+
+## 🏃‍♂️ Running Tests
+
+### Run All Tests
+Execute all tests in the `tests/` directory:
 ```bash
 npx playwright test
 ```
 
-### Run specific tests
-
+### Run Specific Tests
+Run tests in a specific directory or file:
 ```bash
 npx playwright test tests/advanced
 ```
 
 ### Run with Allure Report
+To run tests and generate a comprehensive Allure report:
 
+1.  **Run tests with Allure reporter:**
+    ```bash
+    npm run test:allure
+    ```
+2.  **Generate and open the report:**
+    ```bash
+    npm run allure:generate
+    npm run allure:open
+    ```
+
+**One-liner to refresh reports:**
 ```bash
-npm run test:allure
-npm run allure:generate
-npm run allure:open
+npm run allure:refresh
 ```
 
-## Code Quality
+## 🛠️ Code Quality
 
 ### Linting
-
+Check for code quality issues:
 ```bash
 npm run lint
 ```
 
 ### Formatting
-
+Format code using Prettier:
 ```bash
 npm run format
 ```
 
-## Project Structure
+## ⚙️ Configuration
 
-- `tests/`: Contains test specifications organized by category.
-- `pages/`: Page Object Models.
-- `playwright.config.js`: Playwright configuration.
+The `playwright.config.js` file handles the test configuration:
+-   **Browsers**: Chromium, Firefox, WebKit.
+-   **Parallelism**: Fully parallel execution enabled.
+-   **CI/CD**: Optimized settings for CI environments (retries, workers).
+-   **Reporters**: List and Allure reporters configured.

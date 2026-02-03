@@ -6,7 +6,7 @@ This project contains a robust automated testing framework for the GK applicatio
 
 Ensure you have the following installed on your machine:
 
--   **Node.js** (v14 or higher)
+-   **Node.js** (v18 or higher)
 -   **npm** (Node Package Manager)
 
 ## 🚀 Setup

@@ -1,6 +1,6 @@
 import { expect } from '@playwright/test';
 
-export class outsideViewportPage {
+export class OutsideViewportPage {
   constructor(page) {
     this.page = page;
     this.scrollContainer = page

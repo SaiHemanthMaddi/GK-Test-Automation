@@ -1,6 +1,5 @@
-import { execSync } from 'child_process';
-import fs from 'fs';
-import path from 'path';
+const fs = require('fs');
+const path = require('path');
 
 /**
  * Global Setup - Runs once before all tests
@@ -33,4 +32,4 @@ async function globalSetup() {
     console.log('\n✨ Global Setup Complete!\n');
 }
 
-export default globalSetup;
+module.exports = globalSetup;

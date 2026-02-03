@@ -1,8 +1,8 @@
-export class realtimeUpdatesPage {
+export class RealTimeUpdatesPage {
   constructor(page) {
     this.page = page;
     this.wsStatus = page.locator('[data-testid="ws-status"]');
-    this.wsMessages = page.locator('[data-testid="ws-messages"] ');
+    this.wsMessages = page.locator('[data-testid="ws-messages"]');
     this.pollStart = page.locator('[data-testid="start-polling"]');
     this.pollStop = page.locator('[data-testid="stop-polling"]');
     this.pollCount = page.locator('[data-testid="polling-count"]');

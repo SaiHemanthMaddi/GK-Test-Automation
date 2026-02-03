@@ -23,7 +23,7 @@ import { ApiDynamicPage } from '../pages/Complex/ApiDynamicPage.js';
 import { DelayedLoadingPage as ComplexDelayedLoadingPage } from '../pages/Complex/DelayedLoadingPage.js';
 import { DynamicTablePage } from '../pages/Complex/DynamicTablePage.js';
 import { HiddenElementsPage as ComplexHiddenElementsPage } from '../pages/Complex/HiddenElementsPage.js';
-import { realtimeUpdatesPage } from '../pages/Complex/RealTimeUpdatesPage.js';
+import { RealTimeUpdatesPage } from '../pages/Complex/RealTimeUpdatesPage.js';
 import { RetryLogicPage } from '../pages/Complex/RetryLogicPage.js';
 
 // Advanced Pages
@@ -36,7 +36,7 @@ import { MultipleWindowsPage } from '../pages/Advanced/MultipleWindowsPage.js';
 import { PopupsModalsPage } from '../pages/Advanced/PopupsModalsPage.js';
 import { ShadowDomPage } from '../pages/Advanced/ShadowDomPage.js';
 import { ToastPage } from '../pages/Advanced/ToastPage.js';
-import { iFramesPage } from '../pages/Advanced/iFramesPage.js';
+import { IFramesPage } from '../pages/Advanced/IFramesPage.js';
 
 // Intermediate Pages
 import { IntermediateAutoSuggestPage } from '../pages/Intermediate/AutoSuggestPage.js';
@@ -65,7 +65,7 @@ import { DoubleClickPage } from '../pages/Buggy/DoubleClickPage.js';
 import { DuplicateIdsPage } from '../pages/Buggy/DuplicateIdsPage.js';
 import { DynamicIdsPage as BuggyDynamicIdsPage } from '../pages/Buggy/DynamicIdsPage.js';
 import { HiddenInputFieldPage } from '../pages/Buggy/HiddenInputFieldPage.js';
-import { outsideViewportPage } from '../pages/Buggy/OutsideViewportPage.js';
+import { OutsideViewportPage } from '../pages/Buggy/OutsideViewportPage.js';
 import { OverlappingElementsPage } from '../pages/Buggy/OverlappingElementsPage.js';
 import { RaceConditionPage } from '../pages/Buggy/RaceConditionPage.js';
 import { StaleReferencePage } from '../pages/Buggy/StaleReferencePage.js';
@@ -104,7 +104,7 @@ export const test = base.extend({
     complexDelayedLoadingPage: async ({ page }, use) => await use(new ComplexDelayedLoadingPage(page)),
     dynamicTablePage: async ({ page }, use) => await use(new DynamicTablePage(page)),
     complexHiddenElementsPage: async ({ page }, use) => await use(new ComplexHiddenElementsPage(page)),
-    realtimeUpdatesPage: async ({ page }, use) => await use(new realtimeUpdatesPage(page)),
+    realtimeUpdatesPage: async ({ page }, use) => await use(new RealTimeUpdatesPage(page)),
     retryLogicPage: async ({ page }, use) => await use(new RetryLogicPage(page)),
 
     // ==================== ADVANCED ====================
@@ -117,7 +117,7 @@ export const test = base.extend({
     popupsModalsPage: async ({ page }, use) => await use(new PopupsModalsPage(page)),
     shadowDomPage: async ({ page }, use) => await use(new ShadowDomPage(page)),
     toastPage: async ({ page }, use) => await use(new ToastPage(page)),
-    iframesPage: async ({ page }, use) => await use(new iFramesPage(page)),
+    iframesPage: async ({ page }, use) => await use(new IFramesPage(page)),
 
     // ==================== INTERMEDIATE ====================
     autoSuggestPage: async ({ page }, use) => await use(new IntermediateAutoSuggestPage(page)),
@@ -146,7 +146,7 @@ export const test = base.extend({
     duplicateIdsPage: async ({ page }, use) => await use(new DuplicateIdsPage(page)),
     buggyDynamicIdsPage: async ({ page }, use) => await use(new BuggyDynamicIdsPage(page)),
     hiddenInputFieldPage: async ({ page }, use) => await use(new HiddenInputFieldPage(page)),
-    outsideViewportPage: async ({ page }, use) => await use(new outsideViewportPage(page)),
+    outsideViewportPage: async ({ page }, use) => await use(new OutsideViewportPage(page)),
     overlappingElementsPage: async ({ page }, use) => await use(new OverlappingElementsPage(page)),
     raceConditionPage: async ({ page }, use) => await use(new RaceConditionPage(page)),
     staleReferencePage: async ({ page }, use) => await use(new StaleReferencePage(page)),

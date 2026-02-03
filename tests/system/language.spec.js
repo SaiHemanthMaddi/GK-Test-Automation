@@ -1,6 +1,6 @@
 import { test, expect } from '../../fixtures/customFixtures.js';
 import { HomePage } from '../../pages/HomePage';
-import { LanguagePage } from '../../pages/System/languagePage';
+import { LanguagePage } from '../../pages/System/LanguagePage.js';
 
 const LANGUAGE_MAP = {
   English: {

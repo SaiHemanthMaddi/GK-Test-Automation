@@ -2,22 +2,16 @@ import { test, expect } from '../../fixtures/customFixtures.js';
 import path from 'path';
 import fs from 'fs';
 
-// ⭐ Save download to real Windows Downloads folder
-async function saveDownloadToWindowsDownloads(download) {
-  const home = process.env.USERPROFILE; // C:\Users\Admin
-  const downloadsFolder = path.join(home, 'Downloads');
-
-  if (!fs.existsSync(downloadsFolder)) {
-    fs.mkdirSync(downloadsFolder, { recursive: true });
-  }
-
-  const finalPath = path.join(downloadsFolder, await download.suggestedFilename());
+// Save download to the Playwright test output folder (works on CI and locally)
+async function saveDownloadToTestOutput(download, testInfo) {
+  const fileName = await download.suggestedFilename();
+  const finalPath = testInfo.outputPath(fileName);
   await download.saveAs(finalPath);
   return finalPath;
 }
 
 test.describe('Intermediate - File Operations', () => {
-  test('Upload and download behaviors', async ({ page, homePage, fileOpsPage, browserName }) => {
+  test('Upload and download behaviors', async ({ page, homePage, fileOpsPage }, testInfo) => {
 
     await test.step('Open Intermediate tab', async () => {
       await homePage.open();
@@ -32,7 +26,7 @@ test.describe('Intermediate - File Operations', () => {
     await test.step('Trigger download and validate', async () => {
       const { download } = await fileOpsPage.triggerDownloadAndWait();
 
-      const savedFilePath = await saveDownloadToWindowsDownloads(download);
+      const savedFilePath = await saveDownloadToTestOutput(download, testInfo);
 
       console.log('Saved to:', savedFilePath);
 

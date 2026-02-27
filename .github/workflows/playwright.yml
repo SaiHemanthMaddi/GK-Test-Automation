@@ -16,6 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
@@ -29,22 +31,97 @@ jobs:
         run: npm ci
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
+      - name: Decide Test Scope
+        id: scope
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          EVENT_NAME="${{ github.event_name }}"
+
+          if [[ "$EVENT_NAME" == "schedule" || "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            echo "run_tests=true" >> "$GITHUB_OUTPUT"
+            echo "test_cmd=npx playwright test" >> "$GITHUB_OUTPUT"
+            echo "reason=Scheduled/manual run -> full regression" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          BASE=""
+          HEAD="${{ github.sha }}"
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            BASE="${{ github.event.pull_request.base.sha }}"
+          elif [[ "$EVENT_NAME" == "push" ]]; then
+            BASE="${{ github.event.before }}"
+          fi
+
+          if [[ -z "$BASE" || "$BASE" == "0000000000000000000000000000000000000000" ]]; then
+            echo "run_tests=true" >> "$GITHUB_OUTPUT"
+            echo "test_cmd=npx playwright test" >> "$GITHUB_OUTPUT"
+            echo "reason=No valid base SHA -> full regression" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          mapfile -t CHANGED_FILES < <(git diff --name-only "$BASE" "$HEAD")
+          RUN_ALL=false
+          SPECS=()
+
+          for file in "${CHANGED_FILES[@]}"; do
+            case "$file" in
+              package.json|package-lock.json|playwright.config.js|playwright.config.ts|.github/workflows/playwright.yml)
+                RUN_ALL=true
+                ;;
+              tests/*.spec.js|tests/**/*.spec.js|tests/*.spec.ts|tests/**/*.spec.ts)
+                SPECS+=("$file")
+                ;;
+            esac
+          done
+
+          if [[ "$RUN_ALL" == "true" ]]; then
+            echo "run_tests=true" >> "$GITHUB_OUTPUT"
+            echo "test_cmd=npx playwright test" >> "$GITHUB_OUTPUT"
+            echo "reason=Core config/dependency change -> full regression" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [[ ${#SPECS[@]} -eq 0 ]]; then
+            echo "run_tests=false" >> "$GITHUB_OUTPUT"
+            echo "test_cmd=" >> "$GITHUB_OUTPUT"
+            echo "reason=No changed Playwright specs" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          UNIQUE_SPECS=$(printf '%s\n' "${SPECS[@]}" | sort -u)
+          TEST_CMD="npx playwright test"
+          while IFS= read -r spec; do
+            [[ -n "$spec" ]] && TEST_CMD="$TEST_CMD $spec"
+          done <<< "$UNIQUE_SPECS"
+
+          echo "run_tests=true" >> "$GITHUB_OUTPUT"
+          echo "test_cmd=$TEST_CMD" >> "$GITHUB_OUTPUT"
+          echo "reason=Changed spec scoped run" >> "$GITHUB_OUTPUT"
       - name: Run Playwright tests
-        run: npx playwright test
+        if: steps.scope.outputs.run_tests == 'true'
+        shell: bash
+        run: |
+          echo "Running: ${{ steps.scope.outputs.test_cmd }}"
+          ${{ steps.scope.outputs.test_cmd }}
+      - name: Skip Note
+        if: steps.scope.outputs.run_tests != 'true'
+        run: echo "Skipping Playwright run. Reason: ${{ steps.scope.outputs.reason }}"
       - uses: actions/upload-artifact@v4
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && steps.scope.outputs.run_tests == 'true' }}
         with:
           name: playwright-report
           path: playwright-report/
           retention-days: 30
       - uses: actions/upload-artifact@v4
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && steps.scope.outputs.run_tests == 'true' }}
         with:
           name: test-results
           path: test-results/
           retention-days: 14
       - uses: actions/upload-artifact@v4
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && steps.scope.outputs.run_tests == 'true' }}
         with:
           name: allure-results
           path: allure-results/

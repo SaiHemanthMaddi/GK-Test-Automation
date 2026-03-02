@@ -5,6 +5,80 @@ on:
   pull_request:
     branches: [main, master]
   workflow_dispatch:
+    inputs:
+      browser:
+        description: "Browser to run on (manual runs)"
+        required: true
+        default: "chromium"
+        type: choice
+        options:
+          - chromium
+          - firefox
+          - webkit
+      spec:
+        description: "Spec to run (manual runs)"
+        required: true
+        default: "all"
+        type: choice
+        options:
+          - all
+          - tests/system/storage.spec.js
+          - tests/system/notifications.spec.js
+          - tests/system/language.spec.js
+          - tests/system/geolocation.spec.js
+          - tests/system/cookie.spec.js
+          - tests/system/browser_info.spec.js
+          - tests/intermediate/sliders.spec.js
+          - tests/intermediate/progress.spec.js
+          - tests/intermediate/mouse_interactions.spec.js
+          - tests/intermediate/file_ops.spec.js
+          - tests/intermediate/drag_drop.spec.js
+          - tests/intermediate/date_pickers.spec.js
+          - tests/intermediate/copy_paste.spec.js
+          - tests/intermediate/auto_suggest.spec.js
+          - tests/home.spec.js
+          - tests/buggy/duplicate_ids.spec.js
+          - tests/buggy/race_condition.spec.js
+          - tests/buggy/overlapping.spec.js
+          - tests/buggy/double_click.spec.js
+          - tests/buggy/hidden_input.spec.js
+          - tests/buggy/disabled_button.spec.js
+          - tests/buggy/dynamic_ids.spec.js
+          - tests/buggy/delayed_loading.spec.js
+          - tests/buggy/viewport.spec.js
+          - tests/buggy/common_pitfalls.spec.js
+          - tests/buggy/stale_reference.spec.js
+          - tests/buggy/case_sensitive.spec.js
+          - tests/buggy/whitespace.spec.js
+          - tests/complex/retry_logic.spec.js
+          - tests/complex/realtime_ws.spec.js
+          - tests/complex/realtime_poll.spec.js
+          - tests/complex/hidden_elements.spec.js
+          - tests/complex/dynamic_table.spec.js
+          - tests/complex/delayed_loading.spec.js
+          - tests/complex/api_dynamic.spec.js
+          - tests/business/user_auth.spec.js
+          - tests/business/shopping_cart.spec.js
+          - tests/business/product_filters.spec.js
+          - tests/business/contact_form.spec.js
+          - tests/basic/text_inputs.spec.js
+          - tests/basic/radio.spec.js
+          - tests/basic/password.spec.js
+          - tests/basic/links.spec.js
+          - tests/basic/form_actions.spec.js
+          - tests/basic/dropdown.spec.js
+          - tests/basic/checkbox.spec.js
+          - tests/basic/buttons.spec.js
+          - tests/advanced/toast.spec.js
+          - tests/advanced/shadow_dom.spec.js
+          - tests/advanced/popups_modals.spec.js
+          - tests/advanced/multiple_windows.spec.js
+          - tests/advanced/infinite_scroll.spec.js
+          - tests/advanced/iframes.spec.js
+          - tests/advanced/hidden_elements.spec.js
+          - tests/advanced/dynamic_ids.spec.js
+          - tests/advanced/charts.spec.js
+          - tests/advanced/canvas.spec.js
   schedule:
     - cron: '0 20 * * *'
 concurrency:
@@ -16,8 +90,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
@@ -31,97 +103,35 @@ jobs:
         run: npm ci
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
-      - name: Decide Test Scope
-        id: scope
+      - name: Build Test Command
+        id: cmd
         shell: bash
         run: |
           set -euo pipefail
-
-          EVENT_NAME="${{ github.event_name }}"
-
-          if [[ "$EVENT_NAME" == "schedule" || "$EVENT_NAME" == "workflow_dispatch" ]]; then
-            echo "run_tests=true" >> "$GITHUB_OUTPUT"
-            echo "test_cmd=npx playwright test" >> "$GITHUB_OUTPUT"
-            echo "reason=Scheduled/manual run -> full regression" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          BASE=""
-          HEAD="${{ github.sha }}"
-          if [[ "$EVENT_NAME" == "pull_request" ]]; then
-            BASE="${{ github.event.pull_request.base.sha }}"
-          elif [[ "$EVENT_NAME" == "push" ]]; then
-            BASE="${{ github.event.before }}"
-          fi
-
-          if [[ -z "$BASE" || "$BASE" == "0000000000000000000000000000000000000000" ]]; then
-            echo "run_tests=true" >> "$GITHUB_OUTPUT"
-            echo "test_cmd=npx playwright test" >> "$GITHUB_OUTPUT"
-            echo "reason=No valid base SHA -> full regression" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          mapfile -t CHANGED_FILES < <(git diff --name-only "$BASE" "$HEAD")
-          RUN_ALL=false
-          SPECS=()
-
-          for file in "${CHANGED_FILES[@]}"; do
-            case "$file" in
-              package.json|package-lock.json|playwright.config.js|playwright.config.ts|.github/workflows/playwright.yml)
-                RUN_ALL=true
-                ;;
-              tests/*.spec.js|tests/**/*.spec.js|tests/*.spec.ts|tests/**/*.spec.ts)
-                SPECS+=("$file")
-                ;;
-            esac
-          done
-
-          if [[ "$RUN_ALL" == "true" ]]; then
-            echo "run_tests=true" >> "$GITHUB_OUTPUT"
-            echo "test_cmd=npx playwright test" >> "$GITHUB_OUTPUT"
-            echo "reason=Core config/dependency change -> full regression" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          if [[ ${#SPECS[@]} -eq 0 ]]; then
-            echo "run_tests=false" >> "$GITHUB_OUTPUT"
-            echo "test_cmd=" >> "$GITHUB_OUTPUT"
-            echo "reason=No changed Playwright specs" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          UNIQUE_SPECS=$(printf '%s\n' "${SPECS[@]}" | sort -u)
           TEST_CMD="npx playwright test"
-          while IFS= read -r spec; do
-            [[ -n "$spec" ]] && TEST_CMD="$TEST_CMD $spec"
-          done <<< "$UNIQUE_SPECS"
-
-          echo "run_tests=true" >> "$GITHUB_OUTPUT"
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            TEST_CMD="$TEST_CMD --project=${{ github.event.inputs.browser }}"
+            if [[ "${{ github.event.inputs.spec }}" != "all" ]]; then
+              TEST_CMD="$TEST_CMD ${{ github.event.inputs.spec }}"
+            fi
+          fi
           echo "test_cmd=$TEST_CMD" >> "$GITHUB_OUTPUT"
-          echo "reason=Changed spec scoped run" >> "$GITHUB_OUTPUT"
       - name: Run Playwright tests
-        if: steps.scope.outputs.run_tests == 'true'
-        shell: bash
-        run: |
-          echo "Running: ${{ steps.scope.outputs.test_cmd }}"
-          ${{ steps.scope.outputs.test_cmd }}
-      - name: Skip Note
-        if: steps.scope.outputs.run_tests != 'true'
-        run: echo "Skipping Playwright run. Reason: ${{ steps.scope.outputs.reason }}"
+        run: ${{ steps.cmd.outputs.test_cmd }}
       - uses: actions/upload-artifact@v4
-        if: ${{ !cancelled() && steps.scope.outputs.run_tests == 'true' }}
+        if: ${{ !cancelled() }}
         with:
           name: playwright-report
           path: playwright-report/
           retention-days: 30
       - uses: actions/upload-artifact@v4
-        if: ${{ !cancelled() && steps.scope.outputs.run_tests == 'true' }}
+        if: ${{ !cancelled() }}
         with:
           name: test-results
           path: test-results/
           retention-days: 14
       - uses: actions/upload-artifact@v4
-        if: ${{ !cancelled() && steps.scope.outputs.run_tests == 'true' }}
+        if: ${{ !cancelled() }}
         with:
           name: allure-results
           path: allure-results/

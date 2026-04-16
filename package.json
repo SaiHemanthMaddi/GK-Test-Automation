@@ -20,7 +20,9 @@
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
-    "@playwright/test": "^1.56.1",
+    "@azure/identity": "^4.13.1",
+    "@azure/playwright": "^1.1.4",
+    "@playwright/test": "^1.58.2",
     "@types/node": "^24.10.1",
     "allure-playwright": "^3.4.2",
     "cross-env": "^10.1.0",

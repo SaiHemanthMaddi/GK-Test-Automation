@@ -9,9 +9,10 @@ on:
       browser:
         description: "Browser to run on (manual runs)"
         required: true
-        default: "all"
+        default: "chromium"
         type: choice
         options:
+          - all
           - chromium
           - firefox
           - webkit

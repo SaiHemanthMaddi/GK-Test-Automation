@@ -9,7 +9,7 @@ on:
       browser:
         description: "Browser to run on (manual runs)"
         required: true
-        default: "all"
+        default: "chromium"
         type: choice
         options:
           - all
@@ -126,7 +126,7 @@ jobs:
           BASE_CMD="npx playwright test"
 
           if [[ -n "${PLAYWRIGHT_SERVICE_URL:-}" ]]; then
-            BASE_CMD="$BASE_CMD -c playwright.service.config.cjs --workers=20"
+            BASE_CMD="$BASE_CMD -c playwright.service.config.cjs --workers=5"
           fi
 
           if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then

@@ -2,7 +2,6 @@ import { test, expect } from '../../fixtures/customFixtures.js';
 import path from 'path';
 import fs from 'fs';
 
-// Save download to the Playwright test output folder (works on CI and locally)
 async function saveDownloadToTestOutput(download, testInfo) {
   const fileName = await download.suggestedFilename();
   const finalPath = testInfo.outputPath(fileName);
@@ -19,7 +18,7 @@ test.describe('Intermediate - File Operations', () => {
     });
 
     await test.step('Upload sample file', async () => {
-      const filePath = path.resolve(__dirname, '../../utils/sample-upload.txt');
+      const filePath = path.resolve(process.cwd(), 'utils/sample-upload.txt');
       await fileOpsPage.uploadFile(filePath);
     });
 

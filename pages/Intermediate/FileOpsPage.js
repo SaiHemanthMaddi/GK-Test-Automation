@@ -20,7 +20,7 @@ export class IntermediateFileOpsPage {
     const downloadPromise = this.page.waitForEvent('download');
     await this.downloadButton.click();
     const download = await downloadPromise;
-    const path = await download.path();
-    return { download, path };
+    // const path = await download.path();
+    return { download /*, path */ };
   }
 }

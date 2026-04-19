@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
     inputs:
       browser:
-        description: "Browser to run on (manual runs)"
+        description: 'Select Browser'
         required: true
-        default: "chromium"
+        default: 'all'
         type: choice
         options:
           - all
@@ -82,40 +82,40 @@ on:
           - tests/advanced/canvas.spec.js
   schedule:
     - cron: '0 20 * * *'
+
 permissions:
   contents: read
-  id-token: write
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+
 jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
-    env:
-      PLAYWRIGHT_SERVICE_URL: ${{ secrets.PLAYWRIGHT_SERVICE_URL }}
-      AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
-      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      PLAYWRIGHT_ENABLE_REPORTING: 'true'
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
           cache: npm
+
       - name: Cache Playwright browsers
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
+
       - name: Install dependencies
         run: npm ci
+
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
+
       - name: Build Test Command
         id: cmd
         shell: bash
@@ -125,21 +125,25 @@ jobs:
           EVENT_NAME="${{ github.event_name }}"
           BASE_CMD="npx playwright test"
 
-          if [[ -n "${PLAYWRIGHT_SERVICE_URL:-}" ]]; then
-            BASE_CMD="$BASE_CMD -c playwright.service.config.cjs --workers=5"
-          fi
-
+          # --- MANUAL TRIGGER LOGIC ---
           if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
-            TEST_CMD="$BASE_CMD --project=${{ github.event.inputs.browser }}"
-            if [[ "${{ github.event.inputs.spec }}" != "all" ]]; then
-              TEST_CMD="$TEST_CMD ${{ github.event.inputs.spec }}"
+            # Handle Browser Selection
+            if [[ "${{ github.event.inputs.browser }}" != "all" ]]; then
+              BASE_CMD="$BASE_CMD --project=${{ github.event.inputs.browser }}"
             fi
+            
+            # Handle Spec Selection
+            if [[ "${{ github.event.inputs.spec }}" != "all" ]]; then
+              BASE_CMD="$BASE_CMD ${{ github.event.inputs.spec }}"
+            fi
+            
             echo "run_tests=true" >> "$GITHUB_OUTPUT"
-            echo "test_cmd=$TEST_CMD" >> "$GITHUB_OUTPUT"
-            echo "reason=Manual run" >> "$GITHUB_OUTPUT"
+            echo "test_cmd=$BASE_CMD" >> "$GITHUB_OUTPUT"
+            echo "reason=Manual run: ${{ github.event.inputs.spec }} on ${{ github.event.inputs.browser }}" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
+          # --- SCHEDULED RUN ---
           if [[ "$EVENT_NAME" == "schedule" ]]; then
             echo "run_tests=true" >> "$GITHUB_OUTPUT"
             echo "test_cmd=$BASE_CMD" >> "$GITHUB_OUTPUT"
@@ -147,6 +151,7 @@ jobs:
             exit 0
           fi
 
+          # --- PUSH / PR DIFF LOGIC ---
           BASE=""
           HEAD="${{ github.sha }}"
           if [[ "$EVENT_NAME" == "pull_request" ]]; then
@@ -168,10 +173,10 @@ jobs:
 
           for file in "${CHANGED_FILES[@]}"; do
             case "$file" in
-              package.json|package-lock.json|playwright.config.js|playwright.config.ts|playwright.service.config.cjs|.github/workflows/playwright.yml)
+              package.json|package-lock.json|playwright.config.*|.github/workflows/*.yml)
                 RUN_ALL=true
                 ;;
-              tests/*.spec.js|tests/**/*.spec.js|tests/*.spec.ts|tests/**/*.spec.ts)
+              tests/*.spec.*|tests/**/*.spec.*)
                 SPECS+=("$file")
                 ;;
             esac
@@ -180,7 +185,7 @@ jobs:
           if [[ "$RUN_ALL" == "true" ]]; then
             echo "run_tests=true" >> "$GITHUB_OUTPUT"
             echo "test_cmd=$BASE_CMD" >> "$GITHUB_OUTPUT"
-            echo "reason=Core config/dependency change -> full regression" >> "$GITHUB_OUTPUT"
+            echo "reason=Core config change -> full regression" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
@@ -200,43 +205,26 @@ jobs:
           echo "run_tests=true" >> "$GITHUB_OUTPUT"
           echo "test_cmd=$TEST_CMD" >> "$GITHUB_OUTPUT"
           echo "reason=Changed spec scoped run" >> "$GITHUB_OUTPUT"
-      - name: Azure Login With Credentials
-        if: steps.cmd.outputs.run_tests == 'true' && env.PLAYWRIGHT_SERVICE_URL != '' && env.AZURE_CREDENTIALS != ''
-        uses: azure/login@v2
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Azure Login With OIDC
-        if: steps.cmd.outputs.run_tests == 'true' && env.PLAYWRIGHT_SERVICE_URL != '' && env.AZURE_CREDENTIALS == '' && env.AZURE_CLIENT_ID != '' && env.AZURE_TENANT_ID != '' && env.AZURE_SUBSCRIPTION_ID != ''
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
       - name: Run Playwright tests
         if: steps.cmd.outputs.run_tests == 'true'
         shell: bash
         run: |
           echo "Running: ${{ steps.cmd.outputs.test_cmd }}"
           ${{ steps.cmd.outputs.test_cmd }}
+
       - name: Skip Note
         if: steps.cmd.outputs.run_tests != 'true'
         run: |
           echo "Skipping Playwright run. Reason: ${{ steps.cmd.outputs.reason }}"
-      - uses: actions/upload-artifact@v4
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
         if: ${{ !cancelled() && steps.cmd.outputs.run_tests == 'true' }}
         with:
-          name: playwright-report
-          path: playwright-report/
+          name: playwright-results
+          path: |
+            playwright-report/
+            test-results/
+            allure-results/
           retention-days: 30
-      - uses: actions/upload-artifact@v4
-        if: ${{ !cancelled() && steps.cmd.outputs.run_tests == 'true' }}
-        with:
-          name: test-results
-          path: test-results/
-          retention-days: 14
-      - uses: actions/upload-artifact@v4
-        if: ${{ !cancelled() && steps.cmd.outputs.run_tests == 'true' }}
-        with:
-          name: allure-results
-          path: allure-results/
-          retention-days: 14
